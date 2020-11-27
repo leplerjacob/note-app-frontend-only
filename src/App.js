@@ -1,82 +1,80 @@
-import React, { useState, useEffect } from "react";
-import Note from "./components/Note";
-import "./App.css";
-import noteService from "./services/notes";
-import Notification from "./components/Notification";
+import React, { useState, useEffect } from 'react'
+import Note from './components/Note'
+import './App.css'
+import noteService from './services/notes'
+import Notification from './components/Notification'
 
 const App = () => {
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("a new note...");
-  const [showAll, setShowAll] = useState(true);
-  const [notify, setNotify] = useState(null);
+  const [notes, setNotes] = useState([])
+  const [newNote, setNewNote] = useState('a new note...')
+  const [showAll, setShowAll] = useState(true)
+  const [notify, setNotify] = useState(null)
 
   useEffect(() => {
     noteService
       .getAll()
       .then((initialNotes) => {
-        setNotes(initialNotes);
+        setNotes(initialNotes)
       })
       .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+        console.log(err)
+      })
+  }, [])
 
   const addNote = (event) => {
-    event.preventDefault();
+    event.preventDefault()
     const noteObject = {
       content: newNote,
       date: new Date().toISOString(),
       important: Math.random() < 0.5,
-    };
+    }
 
     noteService
       .create(noteObject)
       .then((returnedNote) => {
-        setNotes(notes.concat(returnedNote));
-        setNewNote("");
-        console.log("success", returnedNote);
+        setNotes(notes.concat(returnedNote))
+        setNewNote('')
+        console.log('success', returnedNote)
       })
       .catch((err) => {
-        console.log("Error Occurred: ", err.response.data.error);
+        console.log('Error Occurred: ', err.response.data.error)
         setNotify(err.response.data.error)
-        setTimeout(()=>{
+        setTimeout(() => {
           setNotify(null)
         }, 5000)
-      });
-  };
+      })
+  }
 
-  const notesToShow = showAll ? notes : notes.filter((note) => note.important);
+  const notesToShow = showAll ? notes : notes.filter((note) => note.important)
 
   const handleNoteChange = (event) => {
-    setNewNote(event.target.value);
-  };
+    setNewNote(event.target.value)
+  }
 
   const toggleImportanceOf = (id) => {
-    const note = notes.find((n) => n.id === id);
-    const changedNote = { ...note, important: !note.important };
+    const note = notes.find((n) => n.id === id)
+    const changedNote = { ...note, important: !note.important }
 
     noteService
       .update(id, changedNote)
       .then((returnedNote) => {
-        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)));
+        setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
       .catch(() => {
-        setNotify(
-          `Note: \"${changedNote.content}\" has already been deleted`
-        );
+        setNotify(`Note: \"${changedNote.content}\" has already been deleted`)
         setTimeout(() => {
-          setNotify(null);
-        }, 5000);
-        setNotes(notes.filter((n) => n.id !== id));
-      });
-  };
+          setNotify(null)
+        }, 5000)
+        setNotes(notes.filter((n) => n.id !== id))
+      })
+  }
 
   const handleDelete = (e, id) => {
-    e.preventDefault();
+    e.preventDefault()
     noteService.deleteNote(id).then((message) => {
-      console.log(message);
-    });
-  };
+      console.log(message)
+    })
+  }
 
   return (
     <div>
@@ -84,7 +82,7 @@ const App = () => {
       <Notification message={notify} />
       <div>
         <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? "important" : "all"}
+          show {showAll ? 'important' : 'all'}
         </button>
       </div>
       <ul>
@@ -102,7 +100,7 @@ const App = () => {
         <button type="submit">save</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
