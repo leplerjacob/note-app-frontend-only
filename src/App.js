@@ -3,6 +3,7 @@ import Note from './components/Note'
 import './App.css'
 import noteService from './services/notes'
 import Notification from './components/Notification'
+import loginService from './services/login'
 
 const App = () => {
   const [notes, setNotes] = useState([])
@@ -11,6 +12,8 @@ const App = () => {
   const [notify, setNotify] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [user, setUser] = useState(null)
+  const [login, setLogin] = useState(false)
 
   useEffect(() => {
     noteService
@@ -21,6 +24,15 @@ const App = () => {
       .catch((err) => {
         console.log(err)
       })
+  }, [])
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    if(loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      noteService.setToken(user.token)
+    }
   }, [])
 
   const addNote = (event) => {
@@ -78,10 +90,79 @@ const App = () => {
     })
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    console.log(
-      `loggin in with username: ${username}, and password: ${password}`
+
+    try {
+      const user = await loginService.login({ username, password })
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
+      noteService.setToken(user.token)
+      setUser(user)
+      setUsername('')
+      setPassword('')
+    } catch (err) {
+      setNotify('Wrong Credentials')
+      setTimeout(() => {
+        setNotify(null)
+      }, 5000)
+    }
+  }
+
+  const loginForm = () => (
+    <form onSubmit={handleLogin}>
+      <h2>Log in</h2>
+      <div>
+        username
+        <input
+          type="text"
+          value={username}
+          name="Username"
+          onChange={({ target }) => setUsername(target.value)}
+        />
+      </div>
+      <div>
+        password
+        <input
+          type="password"
+          value={password}
+          name="Password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type="submit">login</button>
+      <button type="button" onClick={toggleLogin('cancel')}>Cancel</button>
+    </form>
+  )
+
+  const noteForm = () => (
+    <form onSubmit={addNote}>
+      <input value={newNote} onChange={handleNoteChange} />
+      <button type="submit">save</button>
+    </form>
+  )
+
+  const toggleLogin = (component) => {
+    setLogin(!login)
+
+    if(component === 'login'){
+
+    } else if (component === 'logout') {
+      setUser(null)
+    } else if (component === 'cancel') {
+      setUsername('')
+      setPassword('')
+    }
+  }
+
+  const loginButton = () => {
+    return (
+      <button onClick={toggleLogin('login')}>Log in</button>
+    )
+  }
+
+  const logoutButton = () => {
+    return (
+      <button onClick={toggleLogin('logout')}>Log Out</button>
     )
   }
 
@@ -90,28 +171,15 @@ const App = () => {
       <h1>Notes</h1>
       <Notification message={notify} />
 
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
+      {login ? loginForm() : loginButton()}
+
+      {user === null ? (
+        loginForm()
+      ) : (
         <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
+          <p>{user.name} logged in</p> {noteForm()}
         </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
+      )}
 
       <div>
         <button onClick={() => setShowAll(!showAll)}>
@@ -128,10 +196,6 @@ const App = () => {
           />
         ))}
       </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
     </div>
   )
 }
