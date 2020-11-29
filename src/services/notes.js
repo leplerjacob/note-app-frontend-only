@@ -8,7 +8,13 @@ const setToken = newToken => {
 }
 
 const getAll = () => {
-  const request = axios.get(baseUrl);
+  let request
+  try {
+    request = axios.get(baseUrl);
+
+  }catch (err) {
+    console.log(err);
+  }
   return request.then((res) => res.data);
 };
 

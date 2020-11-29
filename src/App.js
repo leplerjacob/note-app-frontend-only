@@ -13,7 +13,7 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [login, setLogin] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
 
   useEffect(() => {
     noteService
@@ -28,7 +28,7 @@ const App = () => {
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
-    if(loggedUserJSON) {
+    if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       noteService.setToken(user.token)
@@ -108,70 +108,52 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <h2>Log in</h2>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-      <button type="button" onClick={toggleLogin('cancel')}>Cancel</button>
-    </form>
-  )
+  const loginForm = () => {
+    if (showLogin) {
+      return (
+        <form onSubmit={handleLogin}>
+          <h2>Log in</h2>
+          <div>
+            username
+            <input
+              type="text"
+              value={username}
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div>
+            password
+            <input
+              type="password"
+              value={password}
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <button type="submit">login</button>
+          <button type="button" onClick={() => setShowLogin(!showLogin)}>
+            Cancel
+          </button>
+        </form>
+      )
+    } else {
+      return <button onClick={() => setShowLogin(!showLogin)}>Log in</button>
+    }
+  }
 
   const noteForm = () => (
     <form onSubmit={addNote}>
       <input value={newNote} onChange={handleNoteChange} />
       <button type="submit">save</button>
+      <button type="button" onClick={() => setShowLogin(!showLogin)}></button>
     </form>
   )
-
-  const toggleLogin = (component) => {
-    setLogin(!login)
-
-    if(component === 'login'){
-
-    } else if (component === 'logout') {
-      setUser(null)
-    } else if (component === 'cancel') {
-      setUsername('')
-      setPassword('')
-    }
-  }
-
-  const loginButton = () => {
-    return (
-      <button onClick={toggleLogin('login')}>Log in</button>
-    )
-  }
-
-  const logoutButton = () => {
-    return (
-      <button onClick={toggleLogin('logout')}>Log Out</button>
-    )
-  }
 
   return (
     <div>
       <h1>Notes</h1>
       <Notification message={notify} />
-
-      {login ? loginForm() : loginButton()}
 
       {user === null ? (
         loginForm()
