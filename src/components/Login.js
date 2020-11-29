@@ -1,23 +1,32 @@
 import React from 'react'
 
-const Login = (props) => {
-
-    const [handleLogin] = props
-
-
-        return (
-            <div>
-                <h2>
-                    Login
-                </h2>
-                <form onSubmit={handleLogin}>
-                    <div>
-                        username 
-                        {/* <input type='text' value={username} /> */}
-                    </div>
-                </form>
-            </div>
-        )
+const LoginForm = ({
+  handleSubmit,
+  handleUsernameChange,
+  handlePasswordChange,
+  username,
+  password,
+}) => {
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          username
+          <input value={username} onChange={handleUsernameChange} />
+        </div>
+        <div>
+          password
+          <input
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+        </div>
+        <button type="submit">login</button>
+      </form>
+    </div>
+  )
 }
 
-export default Login
+export default LoginForm
