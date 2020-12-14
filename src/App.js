@@ -70,7 +70,7 @@ const App = () => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
       .catch(() => {
-        setNotify(`Note: \"${changedNote.content}\" has already been deleted`)
+        setNotify(`Note: "${changedNote.content}" has already been deleted`)
         setTimeout(() => {
           setNotify(null)
         }, 5000)
