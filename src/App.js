@@ -51,7 +51,7 @@ const App = () => {
       })
       .catch((err) => {
         console.log('Error Occurred: ', err.response.data.error)
-        setNotify(err.response.data.error)
+        setNotify(err.response.data.error, false)
         setTimeout(() => {
           setNotify(null)
         }, 5000)
@@ -70,7 +70,7 @@ const App = () => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
       .catch(() => {
-        setNotify(`Note: "${changedNote.content}" has already been deleted`)
+        setNotify(`Note: "${changedNote.content}" has already been deleted`, false)
         setTimeout(() => {
           setNotify(null)
         }, 5000)
@@ -96,7 +96,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (err) {
-      setNotify('Wrong Credentials')
+      setNotify('Wrong Credentials', false)
       setTimeout(() => {
         setNotify(null)
       }, 5000)
@@ -120,7 +120,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={notify} />
+      {notify ?? <Notification notify={notify} />}
 
       {user === null ? (
         loginForm()

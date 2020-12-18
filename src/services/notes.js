@@ -1,7 +1,7 @@
 import axios from "axios";
 // const baseUrl = "/api/notes";
 let baseUrl
-if(process.env.NODE_ENV === 'development') {
+if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     baseUrl = 'http://localhost:3001/api/notes'
 } else {
     baseUrl = '/api/login'

@@ -1,7 +1,7 @@
 import axios from 'axios'
 // const baseUrl = '/api/login'
 let baseUrl
-if(process.env.NODE_ENV === 'development') {
+if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     baseUrl = 'http://localhost:3001/api/login'
 } else {
     baseUrl = '/api/login'
