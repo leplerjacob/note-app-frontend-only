@@ -27,3 +27,11 @@ button {
   color: red;
   font-size: 1.2rem;
 }
+
+.success {
+  padding-left: 3px;
+  line-height: 2rem;
+  border: 2px solid green;
+  color: green;
+  font-size: 1.2rem;
+}

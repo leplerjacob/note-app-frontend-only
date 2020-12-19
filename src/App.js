@@ -50,11 +50,8 @@ const App = () => {
         console.log('success', returnedNote)
       })
       .catch((err) => {
-        console.log('Error Occurred: ', err.response.data.error)
-        setNotify(err.response.data.error, false)
-        setTimeout(() => {
-          setNotify(null)
-        }, 5000)
+        const error = err.response.date.error
+        console.log('Error Occurred: ', error)
       })
   }
 
@@ -70,10 +67,6 @@ const App = () => {
         setNotes(notes.map((note) => (note.id !== id ? note : returnedNote)))
       })
       .catch(() => {
-        setNotify(`Note: "${changedNote.content}" has already been deleted`, false)
-        setTimeout(() => {
-          setNotify(null)
-        }, 5000)
         setNotes(notes.filter((n) => n.id !== id))
       })
   }
@@ -92,11 +85,15 @@ const App = () => {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user))
       noteService.setToken(user.token)
+      setNotify({ message: 'Log in successful', type: true })
+      setTimeout(() => {
+        setNotify(null)
+      }, 5000)
       setUser(user)
       setUsername('')
       setPassword('')
     } catch (err) {
-      setNotify('Wrong Credentials', false)
+      setNotify({ message: 'Wrong Credentials', type: false })
       setTimeout(() => {
         setNotify(null)
       }, 5000)
@@ -120,7 +117,7 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      {notify ?? <Notification notify={notify} />}
+      {notify && <Notification props={notify} />}
 
       {user === null ? (
         loginForm()
